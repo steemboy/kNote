@@ -1,5 +1,5 @@
 @file:JvmName("DateUtils")
-package arca.knote.classes
+package arca.knote
 
 import java.text.SimpleDateFormat
 import java.util.*

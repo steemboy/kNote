@@ -1,7 +1,7 @@
 package arca.knote
 
 import android.app.Application
-import arca.knote.classes.DBHelper
+import io.realm.Realm
 
 class NoteApplication : Application() {
 
@@ -10,12 +10,9 @@ class NoteApplication : Application() {
             private set
     }
 
-    lateinit var dbHelper: DBHelper
-
     override fun onCreate() {
         super.onCreate()
-
+        Realm.init(this)
         instance = this
-        dbHelper = DBHelper()
     }
 }

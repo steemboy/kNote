@@ -3,12 +3,10 @@ package arca.knote.model
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import arca.knote.NoteApplication
 import arca.knote.R
-import arca.knote.classes.formatDate
+import arca.knote.formatDate
 
 class NoteAdapter : RecyclerView.Adapter<NoteHolder>() {
-
     private var mNotesList: ArrayList<Note> = ArrayList()
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): NoteHolder {
@@ -26,47 +24,35 @@ class NoteAdapter : RecyclerView.Adapter<NoteHolder>() {
         p0.mNoteDate.text = formatDate(note.date)
     }
 
-    public fun add(n: Note) {
+    fun add(n: Note) {
         if (!mNotesList.contains(n))
             mNotesList.add(n)
     }
 
-    public fun remove(id: Int) {
+    fun remove(id: Int) {
         if(id < mNotesList.size && id > -1) {
             notifyItemRemoved(id)
             mNotesList.removeAt(id)
-            NoteApplication.instance.dbHelper.removeNote(id)
         }
     }
 
-    public fun remove(n: Note) {
-        if(mNotesList.contains(n)) {
-            notifyItemRemoved(mNotesList.indexOf(n))
-            mNotesList.remove(n)
-            NoteApplication.instance.dbHelper.removeNote(n)
-        }
+    fun change(note: Note) {
+        for(i in 0 until mNotesList.size)
+            if (mNotesList[i].id == note.id) {
+                mNotesList[i] = note
+                notifyItemChanged(i)
+                break
+            }
     }
 
-    public fun removeAll(notes: ArrayList<Note>) {
-        for(n in notes)
-            remove(n)
-    }
-
-    public fun removeAll() {
-        NoteApplication.instance.dbHelper.removeNotes(mNotesList)
+    fun removeAll() {
         mNotesList.clear()
         notifyDataSetChanged()
     }
 
-    public fun addAll(notes: ArrayList<Note>?) {
+    fun addAll(notes: ArrayList<Note>) {
         mNotesList.clear()
-        mNotesList.addAll(notes!!)
+        mNotesList.addAll(notes)
         notifyDataSetChanged()
-    }
-
-    public fun getNote(pos: Int) : Note {
-        if(pos < mNotesList.size && pos >= 0)
-            return mNotesList.get(pos)
-        return Note()
     }
 }

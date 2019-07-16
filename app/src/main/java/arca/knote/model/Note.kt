@@ -1,10 +1,14 @@
 package arca.knote.model
 
-class Note {
-    var title: String = ""
-    var text: String = ""
-    var date: Long = 0
-    var id: Int = 0
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
+
+open class Note : RealmObject() {
+    open var title: String = ""
+    open var text: String = ""
+    open var date: Long = 0
+    @PrimaryKey
+    open var id: Int = -1
 
     fun setTitle(t: String): Note {
         title = t
