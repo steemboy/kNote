@@ -22,7 +22,7 @@ class NotePresenter : MvpPresenter<NoteView>() {
 
     fun onCreate(intent: Intent) {
         if(intent.hasExtra("note_id")) {
-            val n = nHelper.getNote(intent.getIntExtra("note_id", -1))
+            val n = nHelper.getNote(intent.getLongExtra("note_id", Long.MIN_VALUE))
             if (n == null) {
                 mateShortToast("Не удалось загрузить заметку")
                 viewState.onClose()

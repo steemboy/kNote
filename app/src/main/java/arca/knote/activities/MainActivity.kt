@@ -21,6 +21,7 @@ class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompat
     MainView {
     @InjectPresenter
     lateinit var mPresenter: MainPresenter
+    private lateinit var menuItem: MenuItem
     private lateinit var dialogBuilder: AlertDialog.Builder
     private var noteAdapter: NoteAdapter = NoteAdapter()
     private var dialog: AlertDialog? = null
@@ -46,14 +47,14 @@ class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompat
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        menuItem = menu.findItem(R.id.delete)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.delete -> mPresenter.onDeleteAllClick()
-            else -> super.onOptionsItemSelected(item)
-        }
+    override fun onSetSelect(state: Boolean) {
+        menuItem.isVisible = state
+        if(!state)
+            noteAdapter.stopSelect()
     }
 
     override fun showNoteDeleteDialog(text: String) {
@@ -62,14 +63,19 @@ class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompat
         dialog!!.show()
     }
 
+    override fun onBackPressed() = mPresenter.onBackClick()
+
     override fun onNotesLoaded(notes: ArrayList<Note>) = (list.adapter as NoteAdapter).addAll(notes)
     override fun onAllNotesDeleted() = (list.adapter as NoteAdapter).removeAll()
     override fun hideNoteDeleteDialog() = dialog!!.dismiss()
 
-    override fun onItemClick(view: View, position: Int) =  mPresenter.onItemClick(position)
     override fun onItemLongClick(view: View, position: Int) = mPresenter.onItemLongClick(position)
+    override fun onItemClick(view: View, position: Int) = mPresenter.onItemClick(position)
 
     override fun onNoteChange(n: Note?) =  (list.adapter as NoteAdapter).change(n!!)
-    override fun onNoteDelete(pos: Int) =  (list.adapter as NoteAdapter).remove(pos)
+    override fun onNotesDelete(pos: IntArray) =  (list.adapter as NoteAdapter).remove(pos)
     override fun onNoteInsert(n: Note?) = (list.adapter as NoteAdapter).add(n!!)
+    override fun onSelect(sel: Boolean, pos: Int)  = noteAdapter.setSelecItem(sel, pos)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = mPresenter.onMenuSelect(item.itemId)
+    override fun onClose() = finish()
 }

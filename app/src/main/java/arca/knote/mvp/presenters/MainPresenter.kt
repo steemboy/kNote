@@ -1,6 +1,7 @@
 package arca.knote.mvp.presenters
 
 import android.content.Intent
+import arca.knote.R
 import arca.knote.activities.NoteActivity
 import arca.knote.appComponent
 import arca.knote.instance
@@ -19,7 +20,8 @@ class MainPresenter : MvpPresenter<MainView>() {
     @Inject
     lateinit var nHelper: NoteHelper
     private var notes: RealmResults<Note>
-    private var note: Note? = null
+    private var sNotes: ArrayList<Note> = ArrayList()
+    private var select: Boolean = false
 
     init {
         appComponent.inject(this)
@@ -27,12 +29,7 @@ class MainPresenter : MvpPresenter<MainView>() {
         notes.addChangeListener { t: RealmResults<Note>, c: OrderedCollectionChangeSet ->
             when {
                 c.changes.isNotEmpty() -> viewState.onNoteChange(t[c.changes[0]])
-                c.deletions.isNotEmpty() -> run {
-                    if(c.deletions.size == 1)
-                        viewState.onNoteDelete(c.deletions[0])
-                    else
-                        viewState.onAllNotesDeleted()
-                }
+                c.deletions.isNotEmpty() ->  viewState.onNotesDelete(c.deletions)
                 c.insertions.isNotEmpty() -> viewState.onNoteInsert(t[c.insertions[0]])
             }
         }
@@ -44,43 +41,59 @@ class MainPresenter : MvpPresenter<MainView>() {
         nHelper.close()
     }
 
-    fun onFubClick() {
-        instance.startActivity(Intent(instance, NoteActivity::class.java))
+    fun onBackClick() {
+        if(select) {
+            sNotes.clear()
+            select = false
+            viewState.onSetSelect(false)
+        } else
+            viewState.onClose()
     }
 
-    fun onItemClick(pos: Int) {
-        note = notes[pos]
-        instance.startActivity(Intent(instance, NoteActivity::class.java).putExtra("note_id", note!!.id))
+    fun onMenuSelect(id: Int) : Boolean {
+        var ans = true
+        when (id) {
+            R.id.delete -> onDeleteAllClick()
+            R.id.home -> onBackClick()
+            else -> { ans = false }
+        }
+        return ans
     }
 
-    fun onItemLongClick(pos: Int) {
-        note = notes[pos]
-        viewState.showNoteDeleteDialog("Удалить заметку " + note?.title + "?")
-    }
-
-    fun onDeleteAllClick() : Boolean {
-        note = null
-        if(notes.size > 0)
-            viewState.showNoteDeleteDialog("Удалить все заметки?")
-        else
-            mateShortToast("Нет заметок")
-        return true
+    fun onDeleteAllClick() {
+        when {
+            notes.size == sNotes.size -> viewState.showNoteDeleteDialog("Удалить все заметки?")
+            sNotes.size == 0 -> mateShortToast("Заметки не выбранны")
+            else -> viewState.showNoteDeleteDialog("Удалить выбранные заметки? Выбрано: " + sNotes.size)
+        }
     }
 
     fun onDeleteDialogOK() {
         viewState.hideNoteDeleteDialog()
-        if(note == null)
-            nHelper.deleteAll()
-        else
-            nHelper.delete(note!!)
-        note = null
+        nHelper.delete(sNotes)
+        onBackClick()
     }
 
-    fun onDeleteDialogCancel() {
-        viewState.hideNoteDeleteDialog()
+    fun onItemClick(pos: Int) {
+        val n = notes[pos]
+        if (!select)
+            instance.startActivity(Intent(instance, NoteActivity::class.java).putExtra("note_id", notes[pos]!!.date))
+        else if (sNotes.contains(n)) {
+            sNotes.remove(n)
+            viewState.onSelect(false, pos)
+        } else {
+            sNotes.add(n!!)
+            viewState.onSelect(true, pos)
+        }
+    }
+    fun onItemLongClick(pos: Int) {
+        select = true
+        viewState.onSetSelect(true)
+        viewState.onSelect(true, pos)
+        sNotes.add(notes[pos]!!)
     }
 
-    fun onDeleteDialogDismiss() {
-        viewState.hideNoteDeleteDialog()
-    }
+    fun onFubClick() = instance.startActivity(Intent(instance, NoteActivity::class.java))
+    fun onDeleteDialogCancel() = viewState.hideNoteDeleteDialog()
+    fun onDeleteDialogDismiss() = viewState.hideNoteDeleteDialog()
 }

@@ -8,9 +8,9 @@ import kotlinx.coroutines.runBlocking
 class NoteHelper {
     private var realm: Realm = Realm.getDefaultInstance()
 
-    fun getNote(id: Int): Note? = runBlocking {
+    fun getNote(id: Long): Note? = runBlocking {
         return@runBlocking async {
-            realm.where(Note::class.java).equalTo("id", id).findFirst()
+            realm.where(Note::class.java).equalTo("date", id).findFirst()
         }.await()
     }
 
@@ -22,25 +22,18 @@ class NoteHelper {
 
     fun addOrUpdate(note: Note, title: String, text: String) = runBlocking {
         realm.executeTransaction {
-            if (note.id == -1) {
-                note.id = realm.where(Note::class.java).findAll().size
+            if (note.date == Long.MIN_VALUE)
                 note.date = System.currentTimeMillis()
-            }
             note.title = title
             note.text = text
             realm.copyToRealmOrUpdate(note)
         }
     }
 
-    fun delete(note: Note) = runBlocking {
+    fun delete(notes: ArrayList<Note>) = runBlocking{
         realm.executeTransaction {
-            note.deleteFromRealm()
-        }
-    }
-
-    fun deleteAll() = runBlocking {
-        realm.executeTransaction {
-            realm.delete(Note::class.java)
+            for(n in notes)
+                n.deleteFromRealm()
         }
     }
 

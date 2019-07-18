@@ -1,12 +1,14 @@
 package arca.knote.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import arca.knote.R
 import arca.knote.mvp.presenters.NotePresenter
 import arca.knote.mvp.views.NoteView
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import kotlinx.android.synthetic.main.activity_note.*
+
 
 class NoteActivity : MvpAppCompatActivity(), NoteView {
     @InjectPresenter
@@ -26,5 +28,13 @@ class NoteActivity : MvpAppCompatActivity(), NoteView {
     override fun setData(name: String, text: String) {
         this.name.setText(name)
         this.data.setText(text)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return if (item?.itemId == R.id.home) {
+            nPresenter.onCloseButton()
+            true
+        } else
+            super.onOptionsItemSelected(item)
     }
 }

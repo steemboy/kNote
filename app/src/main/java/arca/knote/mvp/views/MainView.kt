@@ -10,6 +10,11 @@ interface MainView : MvpView {
     fun hideNoteDeleteDialog()
 
     fun onNoteChange(n: Note?)
-    fun onNoteDelete(pos: Int)
+    fun onNotesDelete(pos: IntArray)
     fun onNoteInsert(n: Note?)
+
+    fun onSetSelect(state: Boolean)
+    fun onSelect(sel: Boolean, pos: Int)
+
+    fun onClose()
 }
