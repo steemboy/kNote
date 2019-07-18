@@ -1,9 +1,7 @@
-package arca.knote.mvp.main
+package arca.knote.mvp.views
 
-import arca.knote.model.Note
+import arca.knote.mvp.model.Note
 import com.arellomobile.mvp.MvpView
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
 interface MainView : MvpView {
     fun onNotesLoaded(notes: ArrayList<Note>)

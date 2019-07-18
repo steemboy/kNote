@@ -1,24 +1,29 @@
-package arca.knote.mvp.main
+package arca.knote.mvp.presenters
 
 import android.content.Intent
-import arca.knote.NoteApplication
 import arca.knote.activities.NoteActivity
+import arca.knote.appComponent
+import arca.knote.instance
 import arca.knote.mateShortToast
-import arca.knote.model.Note
+import arca.knote.mvp.model.Note
+import arca.knote.mvp.model.NoteHelper
+import arca.knote.mvp.views.MainView
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import io.realm.OrderedCollectionChangeSet
-import io.realm.Realm
 import io.realm.RealmResults
+import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter : MvpPresenter<MainView>() {
+    @Inject
+    lateinit var nHelper: NoteHelper
     private var notes: RealmResults<Note>
     private var note: Note? = null
-    private var realm: Realm = Realm.getDefaultInstance()
 
     init {
-        notes = realm.where(Note::class.java).findAll()
+        appComponent.inject(this)
+        notes = nHelper.getAll()
         notes.addChangeListener { t: RealmResults<Note>, c: OrderedCollectionChangeSet ->
             when {
                 c.changes.isNotEmpty() -> viewState.onNoteChange(t[c.changes[0]])
@@ -31,24 +36,21 @@ class MainPresenter : MvpPresenter<MainView>() {
                 c.insertions.isNotEmpty() -> viewState.onNoteInsert(t[c.insertions[0]])
             }
         }
+        viewState.onNotesLoaded(ArrayList(notes))
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        realm.close()
-    }
-
-    fun onStart() {
-        viewState.onNotesLoaded(ArrayList(notes))
+        nHelper.close()
     }
 
     fun onFubClick() {
-        NoteApplication.instance.startActivity(Intent(NoteApplication.instance, NoteActivity::class.java))
+        instance.startActivity(Intent(instance, NoteActivity::class.java))
     }
 
     fun onItemClick(pos: Int) {
         note = notes[pos]
-        NoteApplication.instance.startActivity(Intent(NoteApplication.instance, NoteActivity::class.java).putExtra("note_id", note!!.id))
+        instance.startActivity(Intent(instance, NoteActivity::class.java).putExtra("note_id", note!!.id))
     }
 
     fun onItemLongClick(pos: Int) {
@@ -67,12 +69,10 @@ class MainPresenter : MvpPresenter<MainView>() {
 
     fun onDeleteDialogOK() {
         viewState.hideNoteDeleteDialog()
-        realm.executeTransaction {
-            if(note == null)
-                notes.deleteAllFromRealm()
-            else
-                note!!.deleteFromRealm()
-        }
+        if(note == null)
+            nHelper.deleteAll()
+        else
+            nHelper.delete(note!!)
         note = null
     }
 

@@ -1,4 +1,4 @@
-package arca.knote.mvp.note
+package arca.knote.mvp.views
 
 import com.arellomobile.mvp.MvpView
 

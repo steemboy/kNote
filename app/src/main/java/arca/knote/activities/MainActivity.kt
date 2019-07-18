@@ -8,16 +8,17 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import arca.knote.R
-import arca.knote.model.Note
-import arca.knote.model.NoteAdapter
-import arca.knote.model.RecyclerItemClickListener
-import arca.knote.mvp.main.MainPresenter
-import arca.knote.mvp.main.MainView
+import arca.knote.adapter.NoteAdapter
+import arca.knote.adapter.RecyclerItemClickListener
+import arca.knote.mvp.model.Note
+import arca.knote.mvp.presenters.MainPresenter
+import arca.knote.mvp.views.MainView
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompatActivity(), MainView {
+class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompatActivity(),
+    MainView {
     @InjectPresenter
     lateinit var mPresenter: MainPresenter
     private lateinit var dialogBuilder: AlertDialog.Builder
@@ -41,11 +42,6 @@ class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompat
         dialogBuilder.setPositiveButton("Да") { _, _ -> mPresenter.onDeleteDialogOK() }
         dialogBuilder.setNegativeButton("Нет") { _, _ ->  mPresenter.onDeleteDialogCancel() }
         dialogBuilder.setCancelable(true)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mPresenter.onStart()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

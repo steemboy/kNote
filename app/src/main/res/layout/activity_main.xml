@@ -20,6 +20,6 @@
             android:layout_margin="@dimen/fab_margin"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            app:srcCompat="@android:drawable/ic_input_add"/>
+            app:srcCompat="@drawable/ic_add_note"/>
 
 </RelativeLayout>

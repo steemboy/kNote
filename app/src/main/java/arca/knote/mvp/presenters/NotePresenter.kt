@@ -1,20 +1,28 @@
-package arca.knote.mvp.note
+package arca.knote.mvp.presenters
 
 import android.content.Intent
+import arca.knote.appComponent
 import arca.knote.mateShortToast
-import arca.knote.model.Note
+import arca.knote.mvp.model.Note
+import arca.knote.mvp.model.NoteHelper
+import arca.knote.mvp.views.NoteView
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import io.realm.Realm
+import javax.inject.Inject
 
 @InjectViewState
 class NotePresenter : MvpPresenter<NoteView>() {
-    private var realm: Realm = Realm.getDefaultInstance()
+    @Inject
+    lateinit var nHelper: NoteHelper
     private var note: Note = Note()
+
+    init {
+        appComponent.inject(this)
+    }
 
     fun onCreate(intent: Intent) {
         if(intent.hasExtra("note_id")) {
-            val n = realm.where(Note::class.java).equalTo("id", intent.getIntExtra("note_id", -1)).findFirst()
+            val n = nHelper.getNote(intent.getIntExtra("note_id", -1))
             if (n == null) {
                 mateShortToast("Не удалось загрузить заметку")
                 viewState.onClose()
@@ -30,14 +38,7 @@ class NotePresenter : MvpPresenter<NoteView>() {
             name.isEmpty() -> mateShortToast("Не указан заголовок заметки...")
             text.isEmpty() -> mateShortToast("Заметка пуста...")
             else -> {
-                realm.executeTransaction {
-                    if (note.id == -1)
-                        note.id = realm.where(Note::class.java).findAll().size
-                    note.title = name
-                    note.text = text
-                    note.date = System.currentTimeMillis()
-                    realm.copyToRealmOrUpdate(note)
-                }
+                nHelper.addOrUpdate(note, name, text)
                 viewState.onClose()
             }
         }
@@ -49,6 +50,6 @@ class NotePresenter : MvpPresenter<NoteView>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        realm.close()
+        nHelper.close()
     }
 }

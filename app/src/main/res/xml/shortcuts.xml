@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+            android:enabled="true"
+            android:shortcutId="new_note"
+            android:icon="@drawable/ic_add_note"
+            android:shortcutDisabledMessage="@string/static_shortcut_disabled_message"
+            android:shortcutLongLabel="@string/static_shortcut_long_label"
+            android:shortcutShortLabel="@string/static_shortcut_short_label">
+        <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="arca.knote.activities.NoteActivity"
+                android:targetPackage="arca.knote" />
+    </shortcut>
+</shortcuts>

@@ -3,4 +3,8 @@
     <string name="action_settings">Удалить всё</string>
     <string name="bt_save">Сохранить</string>
     <string name="bt_cancel">Отмена</string>
+
+    <string name="static_shortcut_disabled_message">Создание заметок не доступно</string>
+    <string name="static_shortcut_long_label">Создать новую заметку</string>
+    <string name="static_shortcut_short_label">Новая заметка</string>
 </resources>

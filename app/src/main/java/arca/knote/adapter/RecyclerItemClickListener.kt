@@ -1,4 +1,4 @@
-package arca.knote.model
+package arca.knote.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.GestureDetector

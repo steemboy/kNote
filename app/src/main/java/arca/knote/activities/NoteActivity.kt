@@ -2,8 +2,8 @@ package arca.knote.activities
 
 import android.os.Bundle
 import arca.knote.R
-import arca.knote.mvp.note.NotePresenter
-import arca.knote.mvp.note.NoteView
+import arca.knote.mvp.presenters.NotePresenter
+import arca.knote.mvp.views.NoteView
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import kotlinx.android.synthetic.main.activity_note.*

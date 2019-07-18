@@ -1,4 +1,4 @@
-package arca.knote.model
+package arca.knote.mvp.model
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey

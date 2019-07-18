@@ -1,10 +1,11 @@
-package arca.knote.model
+package arca.knote.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import arca.knote.R
 import arca.knote.formatDate
+import arca.knote.mvp.model.Note
 
 class NoteAdapter : RecyclerView.Adapter<NoteHolder>() {
     private var mNotesList: ArrayList<Note> = ArrayList()
