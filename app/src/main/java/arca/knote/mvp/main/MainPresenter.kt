@@ -1,8 +1,9 @@
-package arca.knote.mvp
+package arca.knote.mvp.main
 
 import android.content.Intent
 import arca.knote.NoteApplication
 import arca.knote.activities.NoteActivity
+import arca.knote.mateShortToast
 import arca.knote.model.Note
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
@@ -57,7 +58,10 @@ class MainPresenter : MvpPresenter<MainView>() {
 
     fun onDeleteAllClick() : Boolean {
         note = null
-        viewState.showNoteDeleteDialog("Удалить все заметки?")
+        if(notes.size > 0)
+            viewState.showNoteDeleteDialog("Удалить все заметки?")
+        else
+            mateShortToast("Нет заметок")
         return true
     }
 

@@ -1,55 +1,30 @@
 package arca.knote.activities
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
 import arca.knote.R
-import arca.knote.model.Note
-import io.realm.Realm
+import arca.knote.mvp.note.NotePresenter
+import arca.knote.mvp.note.NoteView
+import com.arellomobile.mvp.MvpAppCompatActivity
+import com.arellomobile.mvp.presenter.InjectPresenter
 import kotlinx.android.synthetic.main.activity_note.*
 
-class NoteActivity : AppCompatActivity() {
-    private var note: Note = Note()
-    private lateinit var realm: Realm
+class NoteActivity : MvpAppCompatActivity(), NoteView {
+    @InjectPresenter
+    lateinit var nPresenter: NotePresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_note)
-        realm = Realm.getDefaultInstance()
 
-        if(intent.hasExtra("note_id")) {
-            val n = realm.where(Note::class.java).equalTo("id", intent.getIntExtra("note_id", -1)).findFirst()
-            if (n == null) {
-                Toast.makeText(this, "Не удалось загрузить заметку", Toast.LENGTH_SHORT).show()
-                finish()
-                return
-            }
-            name.setText(n.title)
-            data.setText(n.text)
-            note = n
-        }
+        nPresenter.onCreate(intent)
 
-        cancel.setOnClickListener { finish() }
-
-        save.setOnClickListener{
-            when {
-                name.text.isEmpty() -> Toast.makeText(this, "Не указан заголовок заметки...", Toast.LENGTH_SHORT).show()
-                data.text.isEmpty() -> Toast.makeText(this, "Заметка пуста...", Toast.LENGTH_SHORT).show()
-                else -> {
-                    if(note.id == -1)
-                        note.id = realm.where(Note::class.java).findAll().size
-                    note.title = name.text.toString()
-                    note.text = data.text.toString()
-                    note.date = System.currentTimeMillis()
-                    realm.executeTransaction { realm.copyToRealmOrUpdate(note) }
-                    finish()
-                }
-            }
-        }
+        cancel.setOnClickListener { nPresenter.onCloseButton() }
+        save.setOnClickListener{ nPresenter.onSave(name.text.toString(), data.text.toString()) }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        realm.close()
+    override fun onClose() = finish()
+    override fun setData(name: String, text: String) {
+        this.name.setText(name)
+        this.data.setText(text)
     }
 }

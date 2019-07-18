@@ -11,8 +11,8 @@ import arca.knote.R
 import arca.knote.model.Note
 import arca.knote.model.NoteAdapter
 import arca.knote.model.RecyclerItemClickListener
-import arca.knote.mvp.MainPresenter
-import arca.knote.mvp.MainView
+import arca.knote.mvp.main.MainPresenter
+import arca.knote.mvp.main.MainView
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import kotlinx.android.synthetic.main.activity_main.*
