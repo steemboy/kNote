@@ -21,10 +21,10 @@ class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompat
     MainView {
     @InjectPresenter
     lateinit var mPresenter: MainPresenter
-    private lateinit var menuItem: MenuItem
     private lateinit var dialogBuilder: AlertDialog.Builder
     private var noteAdapter: NoteAdapter = NoteAdapter()
     private var dialog: AlertDialog? = null
+    private var menuItem: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,11 +48,12 @@ class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompat
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         menuItem = menu.findItem(R.id.delete)
+        menuItem!!.isVisible = mPresenter.getState()
         return true
     }
 
     override fun onSetSelect(state: Boolean) {
-        menuItem.isVisible = state
+        menuItem!!.isVisible = state
         if(!state)
             noteAdapter.stopSelect()
     }
@@ -75,7 +76,7 @@ class MainActivity : RecyclerItemClickListener.OnItemClickListener, MvpAppCompat
     override fun onNoteChange(n: Note?) =  (list.adapter as NoteAdapter).change(n!!)
     override fun onNotesDelete(pos: IntArray) =  (list.adapter as NoteAdapter).remove(pos)
     override fun onNoteInsert(n: Note?) = (list.adapter as NoteAdapter).add(n!!)
-    override fun onSelect(sel: Boolean, pos: Int)  = noteAdapter.setSelecItem(sel, pos)
+    override fun onSelect(sel: Boolean, pos: Int)  = noteAdapter.setSelectItem(sel, pos)
     override fun onOptionsItemSelected(item: MenuItem): Boolean = mPresenter.onMenuSelect(item.itemId)
     override fun onClose() = finish()
 }

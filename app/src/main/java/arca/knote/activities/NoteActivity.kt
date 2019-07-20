@@ -7,6 +7,7 @@ import arca.knote.mvp.presenters.NotePresenter
 import arca.knote.mvp.views.NoteView
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.r0adkll.slidr.Slidr
 import kotlinx.android.synthetic.main.activity_note.*
 
 
@@ -19,12 +20,10 @@ class NoteActivity : MvpAppCompatActivity(), NoteView {
         setContentView(R.layout.activity_note)
 
         nPresenter.onCreate(intent)
-
-        cancel.setOnClickListener { nPresenter.onCloseButton() }
         save.setOnClickListener{ nPresenter.onSave(name.text.toString(), data.text.toString()) }
+        Slidr.attach(this)
     }
 
-    override fun onClose() = finish()
     override fun setData(name: String, text: String) {
         this.name.setText(name)
         this.data.setText(text)
@@ -37,4 +36,7 @@ class NoteActivity : MvpAppCompatActivity(), NoteView {
         } else
             super.onOptionsItemSelected(item)
     }
+
+    override fun onClose() = finish()
+    override fun onBackPressed() = nPresenter.onCloseButton()
 }

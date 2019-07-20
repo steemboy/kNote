@@ -75,17 +75,18 @@ class MainPresenter : MvpPresenter<MainView>() {
     }
 
     fun onItemClick(pos: Int) {
-        val n = notes[pos]
+        val n = notes[pos]!!
         if (!select)
-            instance.startActivity(Intent(instance, NoteActivity::class.java).putExtra("note_id", notes[pos]!!.date))
+            instance.startActivity(Intent(instance, NoteActivity::class.java).putExtra("note_id", n.date))
         else if (sNotes.contains(n)) {
             sNotes.remove(n)
             viewState.onSelect(false, pos)
         } else {
-            sNotes.add(n!!)
+            sNotes.add(n)
             viewState.onSelect(true, pos)
         }
     }
+
     fun onItemLongClick(pos: Int) {
         select = true
         viewState.onSetSelect(true)
@@ -96,4 +97,5 @@ class MainPresenter : MvpPresenter<MainView>() {
     fun onFubClick() = instance.startActivity(Intent(instance, NoteActivity::class.java))
     fun onDeleteDialogCancel() = viewState.hideNoteDeleteDialog()
     fun onDeleteDialogDismiss() = viewState.hideNoteDeleteDialog()
+    fun getState(): Boolean = select
 }

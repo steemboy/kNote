@@ -23,7 +23,8 @@
                     android:resource="@xml/shortcuts" />
         </activity>
         <activity android:name=".activities.MainActivity"/>
-        <activity android:name=".activities.NoteActivity">
+        <activity android:name=".activities.NoteActivity"
+            android:theme="@style/Slide">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".activities.MainActivity" />

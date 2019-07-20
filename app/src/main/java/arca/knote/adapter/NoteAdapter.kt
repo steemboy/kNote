@@ -68,7 +68,7 @@ class NoteAdapter : RecyclerView.Adapter<NoteHolder>() {
         notifyDataSetChanged()
     }
 
-    fun setSelecItem(sel: Boolean, pos: Int) {
+    fun setSelectItem(sel: Boolean, pos: Int) {
         if(pos >= notesList.size && pos < 0)
             return
         notesList[pos].selected = sel
